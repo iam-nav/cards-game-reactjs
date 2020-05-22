@@ -14,6 +14,7 @@ export class Card extends Component {
     
         this.state = {
              box:[],
+             name:'',
              latestCards:[],
              img:[],
              names:[],
@@ -24,29 +25,51 @@ export class Card extends Component {
              userId:'',
              playgame:[],
              players:[],
-             cards:[]
+             cards:[],
+             PlayerNumber:[]
         }  
         
 
     }
 
-    componentDidMount(){
-        // this.currentPlayer(4,1)
+    componentWillMount(){
         this.socketEndpoints()
+        // setTimeout(()=>{
+        //     console.log(this.state.PlayerNumber)
+        //     this.currentPlayer(this.state.PlayerNumber)
+        // },1500);
+
         setTimeout(() => {this.setState({displayLoginMsg:true})}, 3000);
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot){
+        if(this.state.cards!==prevState.cards){
+            console.log('reached after will mount')
+            this.setState({
+                latestCards:this.state.cards[0][this.state.PlayerNumber]
+            })
+        // this.currentPlayer(this.state.PlayerNumber)
+        }
+    }
+
+
+
     socketEndpoints(){
         const data = queryString.parse(this.props.location.search)
+        this.setState({name:data.name.toLowerCase()})
         socket=io(ENDPOINT)  
         socket.emit('joinedUsers',{room:data.room},()=>{})
         socket.on('cards_and_players',({players,cardsarrange})=>{
-        let ActivePlayers =  JSON.stringify(players)
-           this.setState({
+            console.log(players)
+            let Player_number = Array(players)[0].findIndex((element)=>element.name ===this.state.name)
+            this.setState({
             players:[players],
-            cards:[cardsarrange]
+            cards:[cardsarrange],
+            TotalPlayers:players.length,
+            PlayerNumber:Player_number
            })
-        })}
+        })
+    }
         // socket=io(ENDPOINT)  
         // const data = queryString.parse(this.props.location.search)
         // const rooms = data.room
@@ -76,12 +99,10 @@ export class Card extends Component {
         // })
       
 
-    currentPlayer(TotalPlayer,currentPlayer){
-        let shuffles = shuffle(deck())
-        let CardsArrange = DistributeCards(shuffles,PlayersJoin(TotalPlayer))
-        let Current_Cards= CardsArrange[currentPlayer-1]
-        this.setState({latestCards:Current_Cards}) 
-    }
+    // currentPlayer(currentPlayer){
+    //     let Current_Cards= this.state.cards[currentPlayer]
+    //     this.setState({latestCards:Current_Cards[currentPlayer]}) 
+    // }
 
 
 
@@ -114,7 +135,7 @@ export class Card extends Component {
             </div>     
             <div className="container">
            {this.state.latestCards.map((result,index)=>{
-               return(
+             return(
          <img className="cardsImage" onClick={()=>this.passCard(result)} src={img[result]} key={index}></img> 
                )
             })}
