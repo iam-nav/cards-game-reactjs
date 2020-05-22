@@ -1,26 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import  {BrowserRouter as Router,Route} from 'react-router-dom'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import join from './components/join'
+import chat from './components/chat'
+import cards from './components/cards/card';
+import create from './components/createRoom'
+import joinRoom from './components/joinRoom'
 
-export default App;
+const app= ()=>(
+    
+<Router>
+    <Route path="/" exact component={join} />
+    <Route path="/chat" component={cards} />
+    <Route path="/create" component={create}/>
+    <Route path="/join" component={joinRoom}/>
+</Router>
+);
+
+export default app;

@@ -1,0 +1,46 @@
+body{
+    background-image: url('../../images/tablebg.jpg');
+    color: black;
+}
+
+.cardsImage{
+ width:90px;
+ align-content:flex-end;
+ margin-left: -5px;
+}
+.container{
+    position:fixed;
+    bottom:8px;
+    left:10%;
+}
+#boxContainer{
+    position: fixed;
+    top: 34%;
+    left: 40%;
+}
+.boxCards{
+    width: 100px;
+}
+.Connected{
+width: 150px;
+height: 150px;
+margin-left: 10px;
+margin-top: 10px;
+}
+.lobby{
+    position: fixed;
+    top:20%;
+    width: 50%;
+    height: 70%;
+    left: 25%;
+    border-radius: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    background-color: lightgrey;
+}
+
+.startGame{
+position: fixed;
+top: 80%;
+left: 40%;
+}
+
