@@ -10,11 +10,13 @@ export class joinRoom extends Component {
         super(props)
     
         this.state = {
+        text:'',
         room:'',
         joinedUsers:[],
         card:false,
         name:'',
-        hideRoomDetail:false
+        hideRoomDetail:false,
+        id:''
         }
     }
 
@@ -37,13 +39,13 @@ export class joinRoom extends Component {
         const data = queryString.parse(this.props.location.search)
         this.setState({room:data.room,name:data.name})
         socket.emit('join',{name:data.name,room:data.room},()=>{})
-        socket.on('message',({text})=>{this.setState({joinedUsers:[text]})})
+        socket.on('message',({text,user})=>{this.setState({joinedUsers:[text]})})
+        socket.on('welcome',({text,user})=>this.setState({text:text,id:user}))
     }
 
     checkGameStart=()=>{
-        console.log('reavhsed')
         socket.on('players',({players})=>{
-         window.location.href=`chat?&room=${this.state.room}&name=${this.state.name}`
+         window.location.href=`chat?&room=${this.state.room}&id=${this.state.id}`
         })
     }
 

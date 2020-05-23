@@ -13,14 +13,42 @@ body{
     bottom:8px;
     left:10%;
 }
-#boxContainer{
-    position: fixed;
-    top: 34%;
-    left: 40%;
-}
 .boxCards{
     width: 100px;
+    position: fixed;
+    top: 38%;
+    left: 40%;
 }
+.second_boxCards{
+    width: 100px;
+    position: fixed;
+    top: 33%;
+    left: 35%;
+    transform:          rotate(270deg);
+    -ms-transform:      rotate(270deg);
+    -moz-transform:     rotate(270deg);
+    -webkit-transform:  rotate(270deg);
+    -o-transform:       rotate(270deg);
+}
+.third_boxCards{
+    width: 100px;
+    position: fixed;
+    top: 25%;
+    left: 40%;
+}
+.fourth_boxCards{
+    width: 100px;
+    position: fixed;
+    top: 33%;
+    left: 45%;
+    transform:          rotate(270deg);
+    -ms-transform:      rotate(270deg);
+    -moz-transform:     rotate(270deg);
+    -webkit-transform:  rotate(270deg);
+    -o-transform:       rotate(270deg);
+}
+
+
 .Connected{
 width: 150px;
 height: 150px;

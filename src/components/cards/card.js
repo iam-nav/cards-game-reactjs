@@ -26,7 +26,13 @@ export class Card extends Component {
              playgame:[],
              players:[],
              cards:[],
-             PlayerNumber:[]
+             PlayerNumber:[],
+             cards_box:{
+                 first:'',
+                 second:'',
+                 third:'',
+                 fourth:''
+             }
         }  
         
 
@@ -34,34 +40,65 @@ export class Card extends Component {
 
     componentWillMount(){
         this.socketEndpoints()
-        // setTimeout(()=>{
-        //     console.log(this.state.PlayerNumber)
-        //     this.currentPlayer(this.state.PlayerNumber)
-        // },1500);
-
+        this.playingGame()
         setTimeout(() => {this.setState({displayLoginMsg:true})}, 3000);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot){
         if(this.state.cards!==prevState.cards){
-            console.log('reached after will mount')
+            let cards =this.state.cards[0][this.state.PlayerNumber].sort((a, b)=>a - b)
             this.setState({
-                latestCards:this.state.cards[0][this.state.PlayerNumber]
+                latestCards:cards
             })
-        // this.currentPlayer(this.state.PlayerNumber)
         }
+        // if(this.state.latestCards!==prevState.)
     }
+
+    playingGame(){
+        socket.on('catchcards',({card,Id})=>{
+            let player = this.state.players[0].findIndex((element)=>element.id===Id)
+            if(player===0){
+            this.setState(prevState => ({
+                cards_box: {  
+                    ...prevState.cards_box,          
+                    first: card
+                }
+            }))
+        }else if(player===1){
+            this.setState(prevState => ({
+                cards_box: {    
+                    ...prevState.cards_box,         
+                    second: card
+                }
+            }))
+        }else if(player===2){
+            this.setState(prevState => ({
+                cards_box: {  
+                    ...prevState.cards_box,            
+                    third: card
+                }
+            }))
+        }else if(player===3) {
+            this.setState(prevState => ({
+                cards_box: {        
+                    ...prevState.cards_box,      
+                    fourth: card
+                }
+            }))
+        }
+        })
+    }
+
 
 
 
     socketEndpoints(){
         const data = queryString.parse(this.props.location.search)
-        this.setState({name:data.name.toLowerCase()})
+        this.setState({userId:data.id,room:data.room})
         socket=io(ENDPOINT)  
         socket.emit('joinedUsers',{room:data.room},()=>{})
         socket.on('cards_and_players',({players,cardsarrange})=>{
-            console.log(players)
-            let Player_number = Array(players)[0].findIndex((element)=>element.name ===this.state.name)
+            let Player_number = Array(players)[0].findIndex((element)=>element.id ===this.state.userId)
             this.setState({
             players:[players],
             cards:[cardsarrange],
@@ -69,69 +106,32 @@ export class Card extends Component {
             PlayerNumber:Player_number
            })
         })
+
     }
-        // socket=io(ENDPOINT)  
-        // const data = queryString.parse(this.props.location.search)
-        // const rooms = data.room
-        // console.log(rooms)
-        // socket.emit('joinedUsers',({rooms})=>{
-          
-        // })
 
-
-        // const data = queryString.parse(this.props.location.search)
-        // let valuse  = JSON.stringify(data)
-        // console.log(this.props.name)
-        // // this.setState({name:data.name,room:data.room})
-        // socket =io(ENDPOINT)  
-        // socket.emit('join',{name:data.name,room:data.room},()=>{
-        // })
-        // socket.on('welcome',({text,user})=>{
-        //     console.log(text,user)
-        //     this.setState({welcomeMsg:text,userId:user})
-        // })
-        // socket.on('message',({CountPlayers_room})=>{
-        //     this.setState({TotalPlayers:CountPlayers_room})
-        //     console.log(CountPlayers_room)
-        // })
-        // socket.on('catchcards',({card})=>{
-        //     console.log(card)
-        // })
-      
-
-    // currentPlayer(currentPlayer){
-    //     let Current_Cards= this.state.cards[currentPlayer]
-    //     this.setState({latestCards:Current_Cards[currentPlayer]}) 
-    // }
-
-
-
-    
     passCard=(card)=>{
        const Current_Cards = DeleteCard(this.state.latestCards,card)
        this.setState({latestCards:Current_Cards})
-       this.setState({box:[...this.state.box,card],})
        socket =io(ENDPOINT) 
-       socket.emit('sendcard',{cardnumber:card,Id:this.state.userId},()=>{        })
-       console.log(this.state.box)
+       socket.emit('sendcard',{cardnumber:card,Id:this.state.userId,room:this.state.room},()=>{})
            }
 
     render() {
         return (  
-        <div>
+        <div>{(this.state.cards_box.first===undefined)?console.log("flipcard"):null}
             <Alert variant="success" hidden={this.state.displayLoginMsg} >{this.state.welcomeMsg}</Alert>            
             <div className="Connected">
-        <h6 style={{opacity:"10",color:'black'}}>Connected Users {this.state.userId} {this.state.TotalPlayers}</h6>
+        <h6 style={{opacity:"10",color:'black'}}>Connected Users{this.state.TotalPlayers}</h6>
         <ul>
-        <li>{this.state.names}</li>
+        {/* <li>{this.state.names}</li> */}
         </ul>
             </div>
 
             <div id="boxContainer">
-                {this.state.box.map((result,index)=>{
-                    return(
-                    <img className="boxCards" src={img[result]} key={index}></img> 
-                 ) })}
+            <img className="boxCards" src={img[this.state.cards_box.first]}></img> 
+            <img className="second_boxCards" src={img[this.state.cards_box.second]}></img> 
+            <img className="third_boxCards" src={img[this.state.cards_box.third]}></img> 
+            <img className="fourth_boxCards" src={img[this.state.cards_box.fourth]}></img>             
             </div>     
             <div className="container">
            {this.state.latestCards.map((result,index)=>{

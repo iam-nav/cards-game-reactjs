@@ -13,7 +13,9 @@ export class create extends Component {
         this.state = {
         room:'',
         name:'',
-        joinedUsers:[]
+        joinedUsers:[],
+        text:'',
+        id:''
         }
     }
 
@@ -25,8 +27,8 @@ export class create extends Component {
         const data = queryString.parse(this.props.location.search)
         this.setState({name:data.name,room:data.room})
         socket=io(ENDPOINT)  
-        socket.emit('join',{name:data.name,room:data.room},()=>{
-        })
+        socket.emit('join',{name:data.name,room:data.room},()=>{})
+        socket.on('welcome',({text,user})=>this.setState({text:text,id:user}))
         socket.on('message',({text})=>{
             this.setState({
                 joinedUsers:[text]
@@ -35,7 +37,6 @@ export class create extends Component {
     }
 
     startGame=()=>{
-        console.log('clicked')
         socket=io(ENDPOINT) 
         socket.emit('playgame',{players:this.state.joinedUsers,room:this.state.room})
     }
@@ -49,7 +50,7 @@ export class create extends Component {
        { this.state.joinedUsers.map((result)=>{
         return result.map((name,index)=>{     
         return(<ul><li key={index}>{name.name}</li></ul>)})})}
-        <Link to={`/chat?&room=${this.state.room}&name=${this.state.name}`}>
+        <Link to={`/chat?&room=${this.state.room}&id=${this.state.id}`}>
         <button className="startGame"  onClick={()=>this.startGame()}>Start</button>
         </Link>
 
