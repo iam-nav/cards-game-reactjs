@@ -57,6 +57,13 @@ const chunkArray = (myArray, chunk_size)=>{
         })
     }
 
+    
+ const two_Players=(first,second)=>{
+    let largest_num= [first,second]
+    let largest = largest_num.sort((a,b)=>a-b).reverse()[0];
+    return largest
+  }
+
 
 module.exports ={
     shuffle:shuffle,
@@ -64,4 +71,5 @@ module.exports ={
     DistributeCards:chunkArray,
     PlayersJoin:PlayersJoin,
     DeleteCard:DeleteCard,
+    two_Players:two_Players
 }

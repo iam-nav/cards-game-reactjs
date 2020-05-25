@@ -58,10 +58,10 @@ import spadek from '../cards_img/Playing_card_spade_K.svg'
 
 
 
-const img = [club1,club2,club3,club4,club5,club6,club7,club8,club9,club10,clubJ,clubK,clubQ,
-    diamon1,diamon2,diamon3,diamon4,diamon5,diamon6,diamon7,diamon8,diamon9,diamon10,diamonJ,diamonQ,diamonK,
-heart1,heart2,heart3,heart4,heart5,heart6,heart7,heart8,heart9,heart10,heartJ,heartQ,heartK,
-spade1,spade2,spade3,spade4,spade5,spade6,spade7,spade8,spade9,spade10,spadeJ,spadeQ,spadek
+const img = [club2,club3,club4,club5,club6,club7,club8,club9,club10,clubJ,clubQ,clubK,club1,
+    diamon2,diamon3,diamon4,diamon5,diamon6,diamon7,diamon8,diamon9,diamon10,diamonJ,diamonQ,diamonK,diamon1,
+heart2,heart3,heart4,heart5,heart6,heart7,heart8,heart9,heart10,heartJ,heartQ,heartK,heart1,
+spade2,spade3,spade4,spade5,spade6,spade7,spade8,spade9,spade10,spadeJ,spadeQ,spadek,spade1,
 ]
 
 export default img
