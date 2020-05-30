@@ -6,12 +6,59 @@ body{
 .cardsImage{
  width:90px;
  align-content:flex-end;
- margin-left: -5px;
+ margin-left: -4.5%;
 }
+
+.cardsImageThreePlayer{
+    width:90px;
+    left: 100px;
+    align-content:flex-end;
+    margin-left: -4.5%;
+   }
+.cardsImageFourPlayer{
+    width:90px;
+    left: 100px;
+    align-content:flex-end;
+    margin-left: -1.5%;
+} 
+.sendCards_from_given_cards{
+    /* width: 100px; */
+    position: fixed;
+    top: 70%;
+    left:18%; 
+    transition: 0.6s ease;
+}
+
+.sendCards_Three_players{
+    position: fixed;
+    top: 70%;
+    left:18%; 
+    transition: 0.6s ease; 
+}
+.sendCards_Four_players{
+    position: fixed;
+    top: 70%;
+    left:30%; 
+    transition: 0.6s ease; 
+}
+
 .container{
-    position:fixed;
-    bottom:8px;
-    left:10%;
+    margin-top: 19%;
+    margin-left: 8%;
+    z-index: 1;
+}
+.containerThreePlayer{
+    margin-top: 19%;
+    margin-left: 22%;
+    z-index: 1;
+}
+.containerFourPlayer{
+    margin-top: 19%;
+    margin-left: 14%;
+    z-index: 1;
+}
+.passNewCard{
+    width: 100px;
 }
 .boxCards{
     width: 100px;
@@ -47,7 +94,11 @@ body{
     -webkit-transform:  rotate(270deg);
     -o-transform:       rotate(270deg);
 }
-
+/* .senCards_from_given_cards{
+    position: fixed;
+    left: 10%;
+    top: 20%;
+} */
 
 .Connected{
 width: 150px;
