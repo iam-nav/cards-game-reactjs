@@ -19,4 +19,4 @@ export const removeDuplicate = (arr)=>{
 }
 
 
-module.exports ={settingPlayers,findingTurn,removeDuplicate}
+// module.exports ={settingPlayers,findingTurn,removeDuplicate}
