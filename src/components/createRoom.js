@@ -7,7 +7,7 @@ import 'antd/dist/antd.css';
 import './custom.css'
 import queryString from 'querystring'
 import io from 'socket.io-client'
-let socket,ENDPOINT = 'localhost:3001';
+let socket,ENDPOINT = 'https://cardsgame0navjot.herokuapp.com/';
 
 
 export class create extends Component {

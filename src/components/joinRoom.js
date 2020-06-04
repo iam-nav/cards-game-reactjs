@@ -2,7 +2,7 @@ import React, { Component} from 'react'
 import { Card } from 'antd';
 import queryString from 'querystring'
 import io from 'socket.io-client'
-let socket,ENDPOINT = 'localhost:3001';
+let socket,ENDPOINT = 'https://cardsgame0navjot.herokuapp.com/';
 export class joinRoom extends Component {
     constructor(props) {
         super(props)

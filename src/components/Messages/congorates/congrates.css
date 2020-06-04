@@ -1,7 +1,7 @@
 
 #overlay {
+  font-family: 'Luckiest Guy', cursive;
     position: fixed;
-    display: none;
     width: 100%;
     height: 100%;
     top: 0;
@@ -18,7 +18,7 @@
     top: 20%;
     left: 50%;
     font-size: 35px;
-    color: white;
+    color: #EDF5E1;
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
   }
@@ -26,6 +26,16 @@
   #text2{
     position: absolute;
     top: 30%;
+    left: 50%;
+    font-size: 35px;
+    color: lightgreen;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+  }
+  
+  #text3{
+    position: absolute;
+    top: 37%;
     left: 50%;
     font-size: 35px;
     color: lightgreen;

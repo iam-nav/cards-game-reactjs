@@ -16,7 +16,7 @@ import {availabe_cards,removeFromLatestCards}  from './functions/filter_current_
 import {settingPlayers,findingTurn,removeDuplicate} from './functions/playersTurn'
 import Congrates from '../Messages/congorates/congratulation'
 import PlayerTurn from '../playerturn/playerTurn'
-let socket,ENDPOINT = 'localhost:3001';
+let socket,ENDPOINT = 'https://cardsgame0navjot.herokuapp.com/';
 export class Card extends Component {
     constructor(props) {
         super(props)
@@ -483,16 +483,9 @@ passNewCard=(card)=>{
        socket.emit('send_From_Specific_Cards',{cardnumber:card,Id:this.state.userId,room:this.state.room,PlayerTurn:this.state.PlayerNumber},()=>{})
     } 
     render() {
-        const data = [
-            'Racing car sprays burning fuel into crowd.',
-            'Japanese princess to wed commoner.',
-            'Australian walks 100km after outback crash.',
-            'Man charged over missing wedding girl.',
-            'Los Angeles battles huge wildfires.',
-          ];
         return (  
         <div>
-         {(this.state.latestCards.length===0)?<Congrates></Congrates>:null}
+         {(this.state.latestCards.length===0)?<Congrates name={this.state.name}></Congrates>:null}
             <PlayerTurn name={this.state.checkTurn} players={this.state.players}></PlayerTurn>
            <h2>{this.state.name}</h2>
             <div className="Connected">  
