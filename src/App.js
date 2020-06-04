@@ -7,7 +7,7 @@ import create from './components/createRoom'
 import joinRoom from './components/joinRoom'
 import Header from './components/layout/header'
 import Footer from './components/layout/footer'
-const app= ()=>(
+const App= ()=>(
     
 <Router>
 <div>
@@ -21,4 +21,4 @@ const app= ()=>(
 </Router>
 );
 
-export default app;
+export default App;
