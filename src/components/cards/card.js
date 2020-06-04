@@ -1,30 +1,33 @@
 import React, { Component } from 'react'
 import {Alert} from 'react-bootstrap'
+import {Badge,Avatar } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {DeleteCard} from './functions/functions'
 import './cards.css'
+import 'animate.css'
 import img from './functions/decksLocation'
 import queryString from 'querystring'
-import Timmer from '../timmer'
 import io from 'socket.io-client'
 import {chk_cards} from './functions/adding_cards'
 import {two_Players,three_Players,Four_Players} from './functions/largest_Cards'
 import {availabe_cards,removeFromLatestCards}  from './functions/filter_current_cards'
-import { totalmem } from 'os';
+import {settingPlayers,findingTurn,removeDuplicate} from './functions/playersTurn'
+import Congrates from '../Messages/congorates/congratulation'
+import PlayerTurn from '../playerturn/playerTurn'
 let socket,ENDPOINT = 'localhost:3001';
 export class Card extends Component {
     constructor(props) {
         super(props)
-    
         this.state = {
              box:[],                                                     // cards player shows
              name:'',                                                    //name of the player
              latestCards:[],                                             //cards players have
              img:[],
-             name:'',
              room:'',
              TotalPlayers:'',                                            
-             displayLoginMsg:false,                                                                 
+             displayLoginMsg:true,                                                                 
              welcomeMsg:'',                                              //welcome msg on joining group
              userId:'',                                                 // current player's user id
              players:[],                                                //total players
@@ -43,22 +46,16 @@ export class Card extends Component {
              check_cards:[],                                   //card throw from given cards
              old_check_cards:[],                               //append check_cards
              hideCheckcards:false, 
-             EmptyCards:false
+             EmptyCards:false,
+             EmptyCards_player:null,
+             playerTurn:[],
+             hideCardsAnimation:false,
+             popupCardsAdd:{
+                 msg:'',
+                 id:''
+             }
         }  
     }
-
-    // componentDidMount(){
-    //  this.interval = setInterval(()=>{
-    //     const {timmer_repeat}= this.state
-    //         this.setState(prevState=>({
-    //             count:prevState.count-1
-    //         }))
-    //          if(this.state.count===0){
-    //         this.setState({count:10,timmer_repeat:timmer_repeat+1})
-    //         }
-    //     },1000) 
-    //     }
-
 
 componentWillMount(){
         this.socketEndpoints()
@@ -74,12 +71,6 @@ componentDidUpdate(prevProps, prevState, snapshot){
                 latestCards:cards
             })
         }
-
-        // if(this.state.timmer_repeat!==prevState.timmer_repeat){
-        //  this.setplayer_turn()
-        // //  console.log(this.state.players[0][this.state.checkTurn].name)
-        // }
-
         if(this.state.check_cards!==prevState.check_cards){
         const curent_cards = removeFromLatestCards(this.state.latestCards,this.state.check_cards)
         this.setState({latestCards:curent_cards})
@@ -113,9 +104,12 @@ setplayer_turn(){
 }
 
 pushCardToOpponet(){
-    socket.on('pushCardToOpponet',({cards,id})=>{
+    socket.on('pushCardToOpponet',({cards,id,msg})=>{
         //Two Players Playing
         if(this.state.TotalPlayers ===2){
+            if(this.state.userId===id){
+            this.setState({popupCardsAdd:{msg:msg,id:id}})
+            }
          if(this.state.userId !== id){
             const addCards = this.state.latestCards.concat(this.state.check_cards,cards)
             this.setState({latestCards:addCards,check_cards:[]})
@@ -135,6 +129,13 @@ pushCardToOpponet(){
              }))
          }
          if(this.state.userId !== id ){
+
+            if(this.state.EmptyCards){
+                console.log('resolve buggy')
+
+            }
+
+
             const {old_check_cards}= this.state
             let latest_old_cards =  old_check_cards.length-1
             const addCards = this.state.latestCards.concat(old_check_cards[latest_old_cards],old_check_cards[latest_old_cards-1])
@@ -199,9 +200,13 @@ playing_Two_players(){
                      ...prevState.cards_box,          
                      first: null,
                      second:null,
-                 }
+                 },
+                 playerTurn:settingPlayers(this.state.TotalPlayers),
+                 check_cards:[],
+                 EmptyCards:false,
+                 EmptyCards_player:null
           }))
-         },2500)
+         },1200)
     }
 }
 
@@ -210,19 +215,19 @@ playing_Three_players(){
         let id = ''
         socket=io(ENDPOINT)   
         if(this.state.EmptyCards){
-           if(this.state.checkTurn===0 && first!=null){
+           if(this.state.checkTurn===0 && this.state.EmptyCards_player===0 && first!=null){
             const AddCards = [first,second,third]
             const greaterCard = two_Players(third,second)
             greaterCard===second?id=this.state.players[0][1].id:id=this.state.players[0][2].id
             socket.emit('addCardToAnotherPlayer',{cards:AddCards,id:id,room:this.state.room},()=>{})
             }
-            else if(this.state.checkTurn===1 && second!=null){
+            else if(this.state.checkTurn===1 && this.state.EmptyCards_player===1 && second!=null){
                 const AddCards = [first,second,third]
                 const greaterCard = two_Players(first,third)
                 //bug in this code revise
                 greaterCard===first?id=this.state.players[0][0].id:id=this.state.players[0][2].id
                 socket.emit('addCardToAnotherPlayer',{cards:AddCards,id:id,room:this.state.room},()=>{})
-            } else if(this.state.checkTurn===2 && third!=null){
+            } else if(this.state.checkTurn===2 && this.state.EmptyCards_player===2 && third!=null){
                 const AddCards = [first,second,third]
                 const greaterCard = two_Players(first,second)
                 //bug in this code revise
@@ -231,6 +236,7 @@ playing_Three_players(){
             }
         }
         if(first!==null && second!==null && third!==null){
+            console.log('reached here')
             if (three_Players(first,second,third)===first){
                 this.setState({checkTurn:0})
             }else if(three_Players(first,second,third)===second){
@@ -245,9 +251,13 @@ playing_Three_players(){
                      first: null,
                      second:null,
                      third:null,
-                 }
+                 },
+                 playerTurn:settingPlayers(this.state.TotalPlayers),
+                 check_cards:[],
+                 EmptyCards:false,
+                 EmptyCards_player:null
           }))
-         },2500)
+         },1200)
         }
           }
 
@@ -257,25 +267,25 @@ playing_four_players(){
     socket=io(ENDPOINT)  
     //adding cards to another player if current card not exist
     if(this.state.EmptyCards){
-       if(this.state.checkTurn===0 && first!=null){
+       if(this.state.checkTurn===0 && this.state.EmptyCards_player===0 && first!=null){
         const AddCards = [first,second,third,fourth]
         const greaterCard = three_Players(second,third,fourth)  
         greaterCard===second?id=this.state.players[0][1].id:greaterCard===third?id=this.state.players[0][2].id:id=this.state.players[0][3]
         socket.emit('addCardToAnotherPlayer',{cards:AddCards,id:id,room:this.state.room},()=>{})
     }
-    else if(this.state.checkTurn===1 && second!=null){
+    else if(this.state.checkTurn===1 && this.state.EmptyCards_player===1 && second!=null){
             const AddCards = [first,second,third,fourth]
             const greaterCard = three_Players(first,third,fourth)  
             greaterCard===first?id=this.state.players[0][0].id:greaterCard===third?id=this.state.players[0][2].id:id=this.state.players[0][3]
             socket.emit('addCardToAnotherPlayer',{cards:AddCards,id:id,room:this.state.room},()=>{})
     }
-    else if(this.state.checkTurn===3 && third!=null){
+    else if(this.state.checkTurn===2 && this.state.EmptyCards_player===2 && third!=null){
             const AddCards = [first,second,third,fourth]
             const greaterCard = three_Players(first,second,fourth)            
             greaterCard===first?id=this.state.players[0][0].id:greaterCard===second?id=this.state.players[0][1].id:id=this.state.players[0][3]
             socket.emit('addCardToAnotherPlayer',{cards:AddCards,id:id,room:this.state.room},()=>{})
         }
-        else if(this.state.checkTurn===4 && fourth!=null){
+        else if(this.state.checkTurn===3 && this.state.EmptyCards_player===3 && fourth!=null){
             const AddCards = [first,second,third,fourth]
             const greaterCard = three_Players(first,second,third)            
             greaterCard===first?id=this.state.players[0][0].id:greaterCard===second?id=this.state.players[0][1].id:id=this.state.players[0][2]
@@ -301,13 +311,30 @@ playing_four_players(){
                      second:null,
                      third:null,
                      fourth:null
-                 }
+                 },
+                 playerTurn:settingPlayers(this.state.TotalPlayers),
+                 check_cards:[],
+                 EmptyCards:false,
+                 EmptyCards_player:null
           }))
-         },2500)
+         },1200)
           }
 }
 playingGame(){
-        socket.on('catchcards',({card,Id})=>{
+        socket.on('catchcards',({card,Id,PlayerTurn})=>{
+           //setting turns of the player
+            const players =removeDuplicate(this.state.playerTurn)
+            findingTurn(players,PlayerTurn).then((result)=>{
+            if(result.playerTurn===Infinity){
+            //     console.log(Infinity)
+            //    this.setState({checkTurn:0})
+            }else{
+                this.setState({
+                    playerTurn:result.playersRemaing,
+                    checkTurn:result.playerTurn})
+            }
+        })//setting turns of the player
+
             if(this.state.userId!==Id){
                 const check_cards = availabe_cards(card,this.state.latestCards)
                  
@@ -319,7 +346,12 @@ playingGame(){
              
                 if(check_cards.length===0){
                     console.log("player Number"+this.state.PlayerNumber)
-                    this.setState({checkTurn:this.state.PlayerNumber,EmptyCards:true})
+                    
+                    
+                    //empty card bug issue
+
+
+                    this.setState({checkTurn:this.state.PlayerNumber,EmptyCards:true,EmptyCards_player:this.state.PlayerNumber})
                 }//two players card logic
 
             }//setting cards in upper row
@@ -355,7 +387,21 @@ playingGame(){
         }
         })
         //sending card from specific cards with different route in socket
-socket.on('send_From_Specific_Cards',({card,Id})=>{
+socket.on('send_From_Specific_Cards',({card,Id,PlayerTurn})=>{
+
+    const players =removeDuplicate(this.state.playerTurn)
+    console.log(PlayerTurn)
+    findingTurn(players,PlayerTurn).then((result)=>{
+        if(result.playerTurn===Infinity){
+            return 'all players have their turn'
+            }else{
+                this.setState({
+                    playerTurn:result.playersRemaing,
+                    checkTurn:result.playerTurn})
+            }
+})
+
+
             if(this.state.userId===Id){
              this.setState({hideCheckcards:true})
             }
@@ -408,63 +454,92 @@ socketEndpoints(){
             players:[players],
             cards:[cardsarrange],
             TotalPlayers:players.length,
-            PlayerNumber:Player_number
+            PlayerNumber:Player_number,
+            playerTurn:settingPlayers(players.length)
            })
         })
 }
 
 passCard=(card)=>{
-      if(this.state.checkTurn!==this.state.PlayerNumber){
-          return 'Another player Turn'
-    }
+    if(this.state.checkTurn!==this.state.PlayerNumber){
+        return 'Another player Turn'
+  }
        const Current_Cards = DeleteCard(this.state.latestCards,card)
        this.setState({latestCards:Current_Cards})
        socket =io(ENDPOINT) 
-       socket.emit('sendcard',{cardnumber:card,Id:this.state.userId,room:this.state.room})
+       socket.emit('sendcard',{cardnumber:card,Id:this.state.userId,room:this.state.room,PlayerTurn:this.state.PlayerNumber})
     }
     
 passNewCard=(card)=>{
+    console.log('rached'+card)
+    if(this.state.checkTurn!==this.state.PlayerNumber){
+        return 'Another player Turn'
+  }
     const{latestCards}=this.state    
     const Current_Cards = DeleteCard(this.state.check_cards,card)
-        //  this.setState({check_cards:Current_Cards})
         const leftCards = [...latestCards,...Current_Cards]
         this.setState({latestCards:leftCards})    
        socket =io(ENDPOINT) 
-       socket.emit('send_From_Specific_Cards',{cardnumber:card,Id:this.state.userId,room:this.state.room},()=>{})
+       socket.emit('send_From_Specific_Cards',{cardnumber:card,Id:this.state.userId,room:this.state.room,PlayerTurn:this.state.PlayerNumber},()=>{})
     } 
-
     render() {
+        const data = [
+            'Racing car sprays burning fuel into crowd.',
+            'Japanese princess to wed commoner.',
+            'Australian walks 100km after outback crash.',
+            'Man charged over missing wedding girl.',
+            'Los Angeles battles huge wildfires.',
+          ];
         return (  
         <div>
-        {/* timmer below */}
-        <h1>{this.state.count}</h1>  
-        <h2>{this.state.name}</h2>
-        <h4>Player turn ={this.state.checkTurn}</h4>
-            <Alert variant="success" hidden={this.state.displayLoginMsg} >{this.state.welcomeMsg}</Alert>            
-            <div className="Connected">
-        <h6 style={{opacity:"10",color:'black'}}>Connected Users{this.state.TotalPlayers}</h6>
-        <ul>
-        </ul>
+         {(this.state.latestCards.length===0)?<Congrates></Congrates>:null}
+            <PlayerTurn name={this.state.checkTurn} players={this.state.players}></PlayerTurn>
+           <h2>{this.state.name}</h2>
+            <div className="Connected">  
+           <ul>        
+        <li id="user"> <Avatar size={30} style={{ backgroundColor: '#FC4445',position:"fixed",right:'13.5%',top:"13%" }} icon={<UserOutlined />} />{(this.state.players.length>0)?this.state.players[0][this.state.PlayerNumber].name:null}   <Badge color="magenta" /></li>
+           </ul>
+
+
+
+         <ol className="Connected_table"> 
+         <tr> 
+        <h6 style={{opacity:"10",color:'#05396B',fontSize:"18px",marginLeft:"-29px",fontStyle:"bold" }}>Joined Players <Badge count={this.state.TotalPlayers} /></h6>   
+        </tr>
+            {this.state.players.map((row)=>{
+               return row.map((result)=>{
+               return <li style={{marginLeft:"-10px",padding:"2px"}}><Avatar size="small"  style={{ backgroundColor: '#05396B',position:"fixed",left:"10px" }} icon={<UserOutlined />} />{result.name} <Badge status="processing"/></li>
+                })
+            })}
+        </ol>
             </div>
             <div id="boxContainer">
-            <img className="boxCards" src={img[this.state.cards_box.first]}></img> 
-            <img className="second_boxCards" src={img[this.state.cards_box.second]}></img> 
-            <img className="third_boxCards" src={img[this.state.cards_box.third]}></img> 
-            <img className="fourth_boxCards" src={img[this.state.cards_box.fourth]}></img>             
+            <img className="boxCards" src={img[this.state.cards_box.first]} alt=""></img> 
+            <img className="second_boxCards" src={img[this.state.cards_box.second]} alt=""></img> 
+            <img className="third_boxCards" src={img[this.state.cards_box.third]} alt=""></img> 
+            <img className="fourth_boxCards" src={img[this.state.cards_box.fourth]} alt=""></img>             
             </div>     
             <div className={(this.state.TotalPlayers===2)?"sendCards_from_given_cards":(this.state.TotalPlayers===3?"sendCards_Three_players":"sendCards_Four_players")} hidden={this.state.hideCheckcards}>
                 {this.state.check_cards.map((result,index)=>{
                     return(
-                        <img className="passNewCard" onClick={()=>this.passNewCard(result)} src={img[result]} key={index}></img>  
+                        <img className="animate__animated animate__backInLeft" onClick={()=>this.passNewCard(result)} src={img[result]} key={index} alt=""></img>  
                     )
                 })}
             </div>
             <div className={this.state.TotalPlayers===2?"container":this.state.TotalPlayers===3?"containerThreePlayer":"containerFourPlayer"} >
            {this.state.latestCards.map((result,index)=>{
-             return(
-         <img className={this.state.TotalPlayers===2?"cardsImage":(this.state.TotalPlayers===3)?"cardsImageThreePlayer":"cardsImageFourPlayer"} onClick={()=>this.passCard(result)} src={img[result]} key={index}></img> 
-               )
-            })}
+               if(this.state.check_cards.length>0){
+                return<img className={this.state.TotalPlayers===2?"animate__animated animate__fadeOutBottomRight":(this.state.TotalPlayers===3)?"animate__animated animate__fadeOutBottomRight":"animate__animated animate__fadeOutBottomRight"}
+                src={img[result]} key={index} alt=""></img>
+            }else{
+                return<img className={this.state.TotalPlayers===2?"animate__animated animate__fadeInBottomRight":(this.state.TotalPlayers===3)?"animate__animated animate__fadeInBottomRight":"animate__animated animate__fadeInBottomRight cardsImageFourPlayer"}
+                onClick={()=>this.passCard(result)} src={img[result]} key={index}  alt=""></img>  
+            }
+        })
+            
+            }
+
+
             </div>
             </div>
             // className={!data.completed ? "NotCompleteTask":"TaskComplete"}

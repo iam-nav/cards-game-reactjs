@@ -1,12 +1,17 @@
 body{
-    background-image: url('../../images/tablebg.jpg');
+    background-color: #5cdb94;
     color: black;
 }
 
-.cardsImage{
+.animate__fadeInBottomRight{
  width:90px;
  align-content:flex-end;
  margin-left: -4.5%;
+}
+.animate__hinge{
+    position: fixed;
+    left: 50%;
+    top:13%
 }
 
 .cardsImageThreePlayer{
@@ -15,6 +20,15 @@ body{
     align-content:flex-end;
     margin-left: -4.5%;
    }
+   /* animate__animated animate__fadeOutRight */
+.animate__fadeOutBottomRight{
+    width:90px;
+    left: 100px;
+    align-content:flex-end;
+    margin-left: -4.5%;
+}
+
+
 .cardsImageFourPlayer{
     width:90px;
     left: 100px;
@@ -24,13 +38,13 @@ body{
 .sendCards_from_given_cards{
     /* width: 100px; */
     position: fixed;
-    top: 70%;
+    top: 60%;
     left:18%; 
     transition: 0.6s ease;
 }
 
 .sendCards_Three_players{
-    position: fixed;
+    position: absolute;
     top: 70%;
     left:18%; 
     transition: 0.6s ease; 
@@ -43,19 +57,18 @@ body{
 }
 
 .container{
-    margin-top: 19%;
+    margin-top: 12%;
     margin-left: 8%;
-    z-index: 1;
+
 }
 .containerThreePlayer{
-    margin-top: 19%;
+    margin-top: 23%;
     margin-left: 22%;
-    z-index: 1;
 }
+
 .containerFourPlayer{
-    margin-top: 19%;
+    margin-top: 23%;    
     margin-left: 14%;
-    z-index: 1;
 }
 .passNewCard{
     width: 100px;
@@ -94,18 +107,6 @@ body{
     -webkit-transform:  rotate(270deg);
     -o-transform:       rotate(270deg);
 }
-/* .senCards_from_given_cards{
-    position: fixed;
-    left: 10%;
-    top: 20%;
-} */
-
-.Connected{
-width: 150px;
-height: 150px;
-margin-left: 10px;
-margin-top: 10px;
-}
 .lobby{
     position: fixed;
     top:20%;
@@ -123,3 +124,29 @@ top: 80%;
 left: 40%;
 }
 
+/* connected table */
+.Connected_table{ 
+   list-style: none;
+    width: 200px;
+    height: 130px;
+    margin-left: 10px;
+    margin-top: 10px;
+    text-align: left;
+    color: #05396B;
+    font-family: 'Luckiest Guy', cursive;
+    text-transform: capitalize;
+    /* border: 1px solid #EDF5E0; */
+    border-radius: 10%;
+}
+
+#user{
+   text-transform: capitalize;
+   font-family: 'Luckiest Guy', cursive;
+   position: fixed;
+   color: #05396B;
+   margin-left: 84%;
+   list-style-type:none;
+}
+.animate__backInLeft{
+    width: 100px;
+}

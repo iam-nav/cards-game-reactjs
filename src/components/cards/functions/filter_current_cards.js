@@ -1,4 +1,4 @@
-const sum =''
+
 export const availabe_cards=(number,cards)=>{
     if(number>=0 && number<=12){
           return clubs(number,cards)

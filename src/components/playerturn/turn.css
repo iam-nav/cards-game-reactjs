@@ -1,0 +1,9 @@
+.containerturn{
+color:#351C75;
+position: fixed;
+left: 40%;
+text-transform: capitalize;
+font-family: 'Luckiest Guy', cursive;
+padding: 0.3%;
+opacity: 0.7;
+}

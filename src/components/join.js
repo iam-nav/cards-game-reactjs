@@ -1,6 +1,8 @@
 import React,{useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Form,Button} from 'react-bootstrap'
+
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Join = ()=>{
@@ -26,22 +28,23 @@ function JoinGroup(){
   setCreteSwitch(true)
 }
 
-function sendRoom(){
-}
-
 return(
   <div>
+    <h1 style={{fontFamily:"'Alfa Slab One', cursive",fontSize:"80px",textAlign:"center",marginTop:"10px"}}>Cards</h1>
+   
+    <div style={{marginLeft:"42%",marginTop:"-3%"}}>
      <Button variant="primary" onClick={setforms} type="submit" disabled={disableCreatebtn}>
     Create Room
   </Button>
   <Button variant="danger" type="submit" onClick={JoinGroup} >
     Join Room
   </Button>
+  </div>
 
-    <Form style={{width:"500px",marginLeft:"30%"}} hidden={hideform}>
+    <Form style={{width:"500px",marginLeft:"32%",color:'#05396B',fontWeight:"bold"}} hidden={hideform} >
   <Form.Group controlId="formBasicEmail">
     <Form.Label>Name</Form.Label>
-    <Form.Control type="name" placeholder="Enter UserName" onChange={(event)=>setName(event.target.value)} />
+    <Form.Control type="name" placeholder="Enter Name" onChange={(event)=>setName(event.target.value)} />
   </Form.Group>
 
   <Form.Group controlId="formBasicPassword" hidden={disableJoinbtn}>

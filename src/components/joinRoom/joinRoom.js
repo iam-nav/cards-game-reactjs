@@ -1,5 +1,5 @@
 import React, { Component} from 'react'
-import { Card } from 'antd';
+
 import queryString from 'querystring'
 import io from 'socket.io-client'
 let socket,ENDPOINT = 'localhost:3001';
@@ -42,15 +42,15 @@ export class joinRoom extends Component {
     render() {
         return (
             <div>
-<h1 style={{fontFamily:"'Alfa Slab One', cursive",fontSize:"80px",textAlign:"center",marginTop:"10px"}}>Cards</h1>
-<div className="site-card-border-less-wrapper" style={{marginLeft:"35%",marginTop:"-1%"}}>
-    <Card title={`Joined Room : ${this.state.room} `} bordered={false} style={{ width: 400 }}>
-    { this.state.joinedUsers.map((result)=>{
+            {console.log(this.state.card)}
+    <div className="lobby" hidden={this.state.hideRoomDetail}>
+        <h1 style={{fontFamily:""}}>Room Name {this.state.room}</h1>
+       { this.state.joinedUsers.map((result)=>{
         return result.map((name)=>{     
-        return(<ul style={{marginLeft:"-30px"}}><li>{name.name}</li></ul>)})})}
-    </Card>
-  </div>,
+        return(<ul><li>{name.name}</li></ul>)})})}
+
     </div>  
+   </div>
         )
     }
 }
